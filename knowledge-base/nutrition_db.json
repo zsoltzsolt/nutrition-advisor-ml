@@ -1,0 +1,46 @@
+{
+    "bmr_formula": {
+      "male": "10 * weight + 6.25 * height - 5 * age + 5",
+      "female": "10 * weight + 6.25 * height - 5 * age - 161"
+    },
+    "activity_factors": {
+      "sedentary": 1.2,
+      "lightly active": 1.375,
+      "moderately active": 1.55,
+      "very active": 1.725,
+      "extra active": 1.9
+    },
+    "goals": {
+      "Weight Loss": {
+        "tdee_adjustment": -500,
+        "protein_g_per_kg": 2.25,
+        "carbs_percentage": 0.40,
+        "fats_percentage": 0.25
+      },
+      "Maintenance": {
+        "tdee_adjustment": 0,
+        "protein_g_per_kg": 1.6,
+        "carbs_percentage": 0.475,
+        "fats_percentage": 0.275
+      },
+      "Recomposition": {
+        "tdee_adjustment": 0,
+        "protein_g_per_kg": 2.2,
+        "carbs_percentage": 0.35,
+        "fats_percentage": 0.25
+      },
+      "Muscle Gain": {
+        "tdee_adjustment": 500,
+        "protein_g_per_kg": 2.0,
+        "carbs_percentage": 0.50,
+        "fats_percentage": 0.25
+      },
+      "Weight Gain": {
+        "tdee_adjustment": 500,
+        "protein_g_per_kg": 2.0,
+        "carbs_percentage": 0.50,
+        "fats_percentage": 0.25
+      }
+    }
+  }
+  
