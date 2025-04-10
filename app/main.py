@@ -1,19 +1,14 @@
-from fastapi import FastAPI, File, UploadFile, Query, WebSocket, HTTPException
+import os
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
-from services.nutrition import calculate_meal_nutrition, retrieve_similar_ingredients
-from services.vectorstore import retriever
-import pandas as pd
-from typing import AsyncGenerator, NoReturn
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
-import uuid
-from pydantic import BaseModel
-import json
-from models.nutrition_model import CalculationRequest 
+from models.nutrition_model import UserData
 from fastapi.middleware.cors import CORSMiddleware
-from services.nutrition import load_knowledge_base, calculate_bmr, calculate_tdee, calculate_macros
-from utils.file_utils import save_temp_file
-import os
+from services import load_knowledge_base
+from services import calculate_bmr, calculate_tdee, calculate_macros
+from services import calculate_meal_nutrition
+from services import is_food_image 
 
 load_dotenv()
 
@@ -35,7 +30,7 @@ app.add_middleware(
 client = AsyncOpenAI()
 
 @app.post("/calculate")
-def calculate(request: CalculationRequest):
+def calculate(request: UserData):
     try:
         kb = load_knowledge_base()
         weight = request.weight
@@ -61,7 +56,9 @@ def calculate(request: CalculationRequest):
         macros = calculate_macros(weight, tdee_goal, goal_rules)
 
         result = macros
+        
         return result
+    
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -69,11 +66,17 @@ def calculate(request: CalculationRequest):
 @app.post("/upload")
 async def upload_image(file: UploadFile = File(...)):
     temp_file_path = os.path.join("../images/", file.filename)
-    save_temp_file(file, temp_file_path)  
+
+    with open(temp_file_path, "wb") as f:
+        f.write(await file.read())
 
     try:
+        if not is_food_image(temp_file_path):
+            return JSONResponse({"error": "Image does not appear to contain food."}, status_code=400)
+
         with open(temp_file_path, "rb") as image_file:
             meal_nutrition = calculate_meal_nutrition(image_file)
+
         if not meal_nutrition:
             return JSONResponse({"error": "Failed to extract ingredients or calculate nutrition."}, status_code=400)
 
