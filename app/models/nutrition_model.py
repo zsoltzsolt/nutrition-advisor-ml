@@ -9,7 +9,7 @@ class NutritionData(BaseModel):
     ingredients: Dict[str, Dict[str, float]]
     total_meal: Dict[str, float]
 
-class CalculationRequest(BaseModel):
+class UserData(BaseModel):
     weight: float
     height: float
     age: int
